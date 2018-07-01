@@ -165,15 +165,14 @@ function Invoke-TmpDavFS(){
     $instruction = 'Mount with: net use X: \\localhost@'+$port+'\'+$sharename;
     Write-Host $instruction;
     while ($true) {
-        $context = $listener.GetContext()
-        $request = $context.Request
-        $response = $context.Response
-	    $hostip = $request.RemoteEndPoint
-	    #Use this for One-Liner Start
-        Write-Host $request.HttpMethod $request.Url
+        $context = $listener.GetContext();
+        $request = $context.Request;
+        $response = $context.Response;
+	$hostip = $request.RemoteEndPoint;
+        Write-Host $request.HttpMethod $request.Url;
         if ($request.HttpMethod -eq "OPTIONS"){  
-            $response.AddHeader("Allow","OPTIONS, GET, PROPFIND, PUT, MKCOL, DELETE, MOVE, PROPPATCH, LOCK, UNLOCK")
-            $response.Close()
+            $response.AddHeader("Allow","OPTIONS, GET, PROPFIND, PUT, MKCOL, DELETE, MOVE, PROPPATCH, LOCK, UNLOCK");
+            $response.Close();
             continue;
          
         }		 
@@ -227,10 +226,10 @@ function Invoke-TmpDavFS(){
                 $tmpFs.getNode($path).delNode($filename);
                 $response.StatusCode = 204;
                 $response.StatusDescription = "No Content";
-                $response.Close()
+                $response.Close();
                 continue;
              }catch{
-                Write-Host $_.Exception
+                Write-Host $_.Exception;
                 $response.StatusCode = 404;
                 $response.StatusDescription = "Not Found";
                 $response.Close()
@@ -240,7 +239,7 @@ function Invoke-TmpDavFS(){
         elseif ($request.HttpMethod -eq "HEAD") { 
             $response.StatusCode = 200;
             $response.StatusDescription = "OK";
-            $response.Close()
+            $response.Close();
             continue;
         }
 	    elseif ($request.HttpMethod -eq "PROPPATCH") {
@@ -248,24 +247,24 @@ function Invoke-TmpDavFS(){
         }
 	    elseif ($request.HttpMethod -eq "PUT") {
             try{
-		        $ms = New-Object System.IO.MemoryStream
-		        [byte[]] $buffer = New-Object byte[] 65536
-		        [int] $bytesRead | Out-Null
-		        $Stream = $request.InputStream
-		        do
-		        {
-			        $bytesRead = $Stream.Read($buffer, 0, $buffer.Length)
-			        $ms.Write($buffer, 0, $bytesRead)
-			
-		        } while ( $bytesRead -ne 0)
-            
-		        $filename = [System.Uri]::UnescapeDataString($request.Url.Segments[-1]);
-                $path = [System.Uri]::UnescapeDataString(-join $request.Url.Segments[0..($request.Url.Segments.Length-2)]);
-		        [byte[]] $Content = $ms.ToArray()
-		        $tmpFs.getNode($path).addNode($filename, $Content);
-                $response.StatusCode = 201;
-                $response.StatusDescription = "Created";
-		        $response.Close()
+		$ms = New-Object System.IO.MemoryStream;
+		[byte[]] $buffer = New-Object byte[] 65536;
+		[int] $bytesRead | Out-Null;
+		$Stream = $request.InputStream;
+		do
+		{
+			$bytesRead = $Stream.Read($buffer, 0, $buffer.Length);
+			$ms.Write($buffer, 0, $bytesRead);
+
+		} while ( $bytesRead -ne 0)
+
+		$filename = [System.Uri]::UnescapeDataString($request.Url.Segments[-1]);
+		$path = [System.Uri]::UnescapeDataString(-join $request.Url.Segments[0..($request.Url.Segments.Length-2)]);
+		[byte[]] $Content = $ms.ToArray();
+		$tmpFs.getNode($path).addNode($filename, $Content);
+		$response.StatusCode = 201;
+		$response.StatusDescription = "Created";
+		$response.Close()
                 continue;
             }catch{
                 Write-Host $_.Exception;
@@ -274,37 +273,36 @@ function Invoke-TmpDavFS(){
                 $response.Close()
                 continue;
             }
-	    }
+    }
         elseif ($request.HttpMethod -eq "MKCOL") {
-                    try{
-		                $name = [System.Uri]::UnescapeDataString($request.Url.Segments[-1]);
-                        $path = [System.Uri]::UnescapeDataString(-join $request.Url.Segments[0..($request.Url.Segments.Length-2)]);
-		                $tmpFs.getNode($path).addNode($name);
-                        $response.StatusCode = 201;
-                        $response.StatusDescription = "Created";
-		                $response.Close()
-                        continue;
-                    }catch{
-                        Write-Host $_.Exception;
-                        $response.StatusCode = 404;
-                        $response.StatusDescription = "Not Found";
-                        $response.Close()
-                        continue;
-                    }
-	            }
+	    try{
+		$name = [System.Uri]::UnescapeDataString($request.Url.Segments[-1]);
+		$path = [System.Uri]::UnescapeDataString(-join $request.Url.Segments[0..($request.Url.Segments.Length-2)]);
+		$tmpFs.getNode($path).addNode($name);
+		$response.StatusCode = 201;
+		$response.StatusDescription = "Created";
+		$response.Close()
+		continue;
+	    }catch{
+		Write-Host $_.Exception;
+		$response.StatusCode = 404;
+		$response.StatusDescription = "Not Found";
+		$response.Close()
+		continue;
+	    }
+	    }
 	    elseif ($request.HttpMethod -eq "GET"){ 
             try{
-		        $node = $tmpFs.getNode($request.Url.LocalPath);
+		$node = $tmpFs.getNode($request.Url.LocalPath);
                 if (-not $node -or $node.isCollection){
                     $response.StatusCode=404;
-                
                 }else{
                     [byte[]] $buffer = $node.file;
                     $response.ContentType = 'application/octet-stream';
-		            $response.ContentLength64 = $buffer.length;
-		            $output = $response.OutputStream;
-		            $output.Write($buffer, 0, $buffer.length);
-		            $output.Close();
+		    $response.ContentLength64 = $buffer.length;
+		    $output = $response.OutputStream;
+		    $output.Write($buffer, 0, $buffer.length);
+		    $output.Close();
                     continue;
                 }
            }catch{
