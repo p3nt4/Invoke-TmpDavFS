@@ -1,20 +1,21 @@
 # Invoke-TempDavFS
 In Memory Powershell WebDav Server
 
-## DESCRIPTION
+### Description
  
 Creates a memory backed webdav server using powershell that can be mounted as a filesystem.
 
 Note: Mounting the remote filesystem on windows implies local caching of accessed files in the C:\Windows\ServiceProfiles\LocalService\AppData\Local\Temp\TfsStore\Tfs_DAV system directory.
  
-## USAGE
+## Usage
+
 '''
 Import-Module Invoke-TempDavFS.psm1
 
 Invoke-TempDavFS
 '''
 
-## PARAMETERS
+## Parameters
 
 port: Port to listen on, defaults to 8080.
 
