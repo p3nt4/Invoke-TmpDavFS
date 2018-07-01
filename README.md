@@ -21,6 +21,6 @@ port: Port to listen on, defaults to 8080.
 
 sharename: Name of the share to export, defaults to Temp
  
-export: Listen on any interface, instead of localhost (requires admin).
+export: Listen on all interfaces instead of localhost (requires admin).
 
 auth: Require authentication, defaults to false.
