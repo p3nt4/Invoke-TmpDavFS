@@ -26,7 +26,7 @@ sharename: Name of the share to export, defaults to Temp
  
 export: Listen on any interface, instead of localhost (requires admin).
 
-auth: Require authentication, defaults to false.
+auth: Require authentication, defaults to true.
 
  
 #>
@@ -145,7 +145,7 @@ function Invoke-TmpDavFS(){
 
         [switch]$export,
 
-        [Switch]$auth
+        [Switch]$auth = $TRUE
     )
   try{
     $tmpFs = [TmpDavFSNode]::new("");
