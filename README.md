@@ -23,4 +23,4 @@ sharename: Name of the share to export, defaults to Temp
  
 export: Listen on all interfaces instead of localhost (requires admin).
 
-auth: Require authentication, defaults to false.
+auth: Require authentication, defaults to true.
