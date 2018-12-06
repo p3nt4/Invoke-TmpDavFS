@@ -10,7 +10,7 @@ Note: Mounting the remote filesystem on windows implies local caching of accesse
 ## Usage
 
 ```
-Import-Module Invoke-TempDavFS.psm1
+Import-Module .\Invoke-TempDavFS.psm1
 
 Invoke-TempDavFS
 ```
